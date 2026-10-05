@@ -1,0 +1,48 @@
+# Proyek: E-commerce Kopi (Next.js + Prisma + MySQL/MariaDB)
+
+## Stack
+- Next.js App Router + TypeScript
+- Database: MariaDB, diakses lewat Prisma ORM
+- Styling: Tailwind CSS
+
+## Struktur database (jangan diubah tanpa konfirmasi)
+Model yang sudah ada: users, categories, products, product_variants,
+carts, cart_items, orders, order_items.
+Skema lengkap ada di prisma/schema.prisma — baca itu sebelum bikin query,
+jangan menebak nama field.
+
+## Aturan penting soal data
+- Harga (price, unit_price, total_amount) bertipe Decimal. Jangan
+  dikonversi ke number biasa untuk kalkulasi uang, pakai library
+  Decimal atau konversi hati-hati di langkah terakhir saja.
+- Kolom `attributes` di product_variants itu String (LongText), BUKAN
+  Json asli (keterbatasan MariaDB). WAJIB JSON.stringify() sebelum
+  simpan, dan JSON.parse() sesudah ambil dari database.
+- order_items menyimpan snapshot (product_name, variant_name, unit_price)
+  saat checkout. JANGAN pernah ambil harga dari product_variants untuk
+  menampilkan riwayat order lama — selalu pakai data yang ada di
+  order_items itu sendiri.
+- Stock di product_variants tidak boleh berkurang di luar proses
+  checkout yang sudah tervalidasi.
+
+## Cara kerja denganku
+- Kerjakan SATU fitur per permintaan. Jangan membuat banyak file
+  sekaligus untuk fitur yang belum diminta.
+- Setelah membuat/mengubah kode, jelaskan singkat apa yang dilakukan
+  dan kenapa, terutama bagian yang berhubungan dengan database.
+- Jangan install package baru tanpa bilang dulu package apa dan kenapa.
+- Jangan ubah prisma/schema.prisma tanpa konfirmasi eksplisit.
+- Gunakan Prisma Client melalui satu instance singleton di lib/prisma.ts
+  (lihat file itu), jangan bikin `new PrismaClient()` di banyak tempat.
+
+## Fitur MVP, urutan pengerjaan
+1. Register & login (password di-hash dengan bcrypt, JANGAN plaintext)
+2. Daftar produk + filter kategori
+3. Detail produk (tampilkan semua variant)
+4. Keranjang belanja (cart + cart_items)
+5. Checkout sederhana (buat order + order_items, simulasi pembayaran)
+6. Riwayat pesanan
+
+## Di luar scope untuk sekarang
+Payment gateway asli, review/rating, promo/voucher, wishlist,
+dashboard admin lengkap, notifikasi email.
